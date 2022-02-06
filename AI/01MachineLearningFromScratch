@@ -1,0 +1,58 @@
+# A simple neural network coded from scratch (no frameworks)
+# Sample problem statment: Given a pattern of street lights, figure out whether to walk or stop
+
+# for vector multiplication
+import numpy as np
+
+# initialise with random weights
+weights = np.array([0.7, 0.2, -0.5])
+# prevents gradient descent from going out of control and overshooting to actually increasing the error with a huge jump
+alpha = 0.1
+
+# Street light data
+# In the real world, this data would come from an external dataset
+# Here, it's a simple street light with three lights OOO
+# 1 = on, 0 = off
+streetLights = np.array( [[1, 0, 1],
+                          [0, 1, 1],
+                          [0, 0, 1],
+                          [1, 1, 1],
+                          [0, 1, 1],
+                          [1, 0, 1]])
+
+# To walk or to stop, that is the question
+walkOrStop = np.array([0, 1, 0, 1, 1, 0])
+
+# iteratively reduce the error
+# sometimes, you have hundreds or thousands of iterations in real world scenarios
+for iteration in range(50):
+    # initialise error to 0
+    errorForAllLights = 0
+    # for each element in the goal dataset (walk or stop data)
+    for row in range(len(walkOrStop)):
+        # initialise the input and the expected goal
+        input = streetLights[row]
+        goalPrediction = walkOrStop[row]
+
+        # make prediction
+        # vector * matrix
+        prediction = input.dot(weights)
+
+        # calculate the error as (value - expectedValue) ^ 2
+        error = (prediction - goalPrediction) ** 2
+        errorForAllLights += error
+
+        # how much the prediction is off
+        delta = prediction - goalPrediction
+
+        # gradient descent - adjust the weights
+        # we multiply by alpha because sometimes, the delta may be large
+        # and the nudge may actually overshoot the required amount
+        # and actually increase the error
+        weights = weights - (alpha * (input * delta))
+
+        # print the prediction in each inner iteration
+        print('Prediction: {}'.format(prediction))
+    # print the weights and error in each outer iteration
+    print('Weights: {}'.format(weights))
+    print('Error: {}\n'.format(error))
